@@ -75,7 +75,44 @@ select purchase_price ,count(*) from Product where product_type = '衣服' group
      --结合where子句一起使用的时候会现根据where子句对记录进行过滤，然后再进行分组处理
      --此时sql的执行顺序为: from -> where -> group by -> select
 
+-- 3-2为聚合结果指定条件     -having
+select product_type , count(*) from Product group by product_type having count(*)=2;
 
+-- 3-4对查询结果进行排序         --order by
+select product_id , product_name,sale_price,purchase_price from Product order by sale_price asc;        --按照销售价格由低到高(默认升序)
+select product_id , product_name,sale_price,purchase_price from Product order by sale_price desc;        --按照销售价格由低到高(降序)
+select product_id , product_name,sale_price,purchase_price from Product order by sale_price asc , product_id asc; -- 指定多个排序键
+select product_type ,count(*) from Product group by product_type order by count(*);                     --order by使用聚合函数
+
+-- 4-1数据的插入
+--建表：
+create table ProductIns
+(product_id char(4) not null primary key,
+product_name varchar(100) not null,
+product_type varchar(32) not null,
+sale_price int default 0,purchase_price int,regist_data date);
+--从其他表中复制数据
+insert into ProductCopy select * from Product;
+insert into ProductType select product_type,sum(sale_price),sum(purchase_price) from Product group by product_type;
+
+-- 4-2数据的删除 drop/delete
+delete from Product;
+delete from Product where sale_price >= 4000;
+drop table Product;
+
+-- 4-3数据的更新
+update Product set regist_date = '2009-10-10';          --即使值为null也会更新
+update Product set sale_price = sale_price * 10 where product_type = '厨房用具';
+--多列更新
+update Product set sale_price = sale_price * 10,purchase_price = purchase_price / 2 where product_type = '厨房用具';
+
+-- 4-4事务
+start transaction;
+dml
+commit ;            --提交
+rollback ;          --取消
+
+-- 5-1视图
 
 
 
