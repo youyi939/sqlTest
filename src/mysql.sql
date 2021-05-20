@@ -96,7 +96,7 @@ insert into ProductCopy select * from Product;
 insert into ProductType select product_type,sum(sale_price),sum(purchase_price) from Product group by product_type;
 
 -- 4-2数据的删除 drop/delete
-delete from Product;
+delete from Product;                    --清空整张数据表
 delete from Product where sale_price >= 4000;
 drop table Product;
 
@@ -113,6 +113,19 @@ commit ;            --提交
 rollback ;          --取消
 
 -- 5-1视图
+create view ProductSum (product_type,cnt_product) as select product_type,count(*) from Product group by product_type;        --创建视图
+drop view ProductSum;           --删除视图
+
+-- 5-2子查询
+select product_type,cnt_product from (select product_type,count(*) as cnt_product from Product group by product_type)as ProductSum;
+-- 标量子查询
+select product_id,product_name,sale_price from Product where sale_price > (select avg(sale_price) from Product);    --查询销售单价高于全部商品平均售价的商品
+select product_id,product_name,sale_price,(select avg(sale_price)from Product) as avg_price from Product;
+select product_type ,avg(sale_price) from Product group by product_type having avg(sale_price) > (select avg(sale_price) from Product);      --查询按照商品种类计算出的销售单价高于全部商品的平均售价的商品种类
+--关联子查询
+select product_type,product_name,sale_price from Product as P1
+where sale_price >
+(select avg(sale_price) from Product as P2 where P1.product_type = P2.product_type group by product_type);  --查询各种商品种类中 高于该商品种类的平均售价的商品
 
 
 
